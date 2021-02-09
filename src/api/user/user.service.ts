@@ -1,58 +1,68 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument } from './user.schema';
+import { InjectModel } from '@nestjs/sequelize';
 import { loginDto, registerDto, resetPswDto } from './user.dtos';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { User } from './user.model';
 
 @Injectable()
 export class UserService {
-
   constructor(
     private jwtService: JwtService,
-    @InjectModel(User.name)
-    private userModel: Model<UserDocument>,
+    @InjectModel(User)
+    private userModel: typeof User,
   ) {}
 
   async resetPsw(id, data: resetPswDto) {
-    const user = await this.userModel.findOne({_id: id});
+    const user = await this.userModel.findOne({
+      where: {
+        id: id,
+      },
+    });
     if (!user) {
       throw new HttpException('Wrong user', HttpStatus.BAD_REQUEST);
     }
-    const res = await this.userModel.updateOne(
-      {_id: id},
-      {
-        password: data.password
-      }
-    );
-
-    return res;
+    const hashedPsw = await bcrypt.hash(data.password, 10);
+    return user.update({
+      password: hashedPsw,
+    });
   }
 
-  async register(user: registerDto) {
-    const hashedPsw = await bcrypt.hash(user.password, 10);
-    const newUser = new this.userModel({ ...user, password: hashedPsw });
-    await newUser.save();
-    return newUser;
+  async register(data: registerDto) {
+    const hashedPsw = await bcrypt.hash(data.password, 10);
+    const user = new User();
+    Object.assign(user, {
+      ...data,
+      password: hashedPsw,
+    });
+    return user.save();
   }
 
   async login(data: loginDto) {
-    const user = await this.userModel.findOne({username: data.username});
+    const user = await this.userModel.findOne({
+      where: {
+        username: data.username,
+      },
+    });
     if (!user) {
-      throw new HttpException('Wrong username provided', HttpStatus.BAD_REQUEST);
-    }
-      const isPasswordMatching = await bcrypt.compare(
-        data.password,
-        user.password
+      throw new HttpException(
+        'Wrong username provided',
+        HttpStatus.BAD_REQUEST,
       );
-      if (!isPasswordMatching) {
-        throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
-      }
-      const payload = {  _id: user._id, username: user.username };
-      return {
-        accessToken: this.jwtService.sign(payload),
-      };
+    }
+    const isPasswordMatching = await bcrypt.compare(
+      data.password,
+      user.password,
+    );
+    if (!isPasswordMatching) {
+      throw new HttpException(
+        'Wrong credentials provided',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const payload = { id: user.id, username: user.username };
+    return {
+      accessToken: this.jwtService.sign(payload),
+    };
   }
-
 }

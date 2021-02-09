@@ -21,7 +21,7 @@ export class UserController {
     @Request() req,
     @Body() data : resetPswDto
   ): Promise<any> {
-    return this.userService.resetPsw(req.user._id, data);
+    return this.userService.resetPsw(req.user.id, data);
   }
 
   @Post('login')

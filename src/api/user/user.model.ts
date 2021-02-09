@@ -1,14 +1,20 @@
 
-import { Column, Model, Table } from 'sequelize-typescript';
+import { Column, Model, Table, Unique } from 'sequelize-typescript';
 
 @Table
 export class User extends Model<User> {
+  @Unique
   @Column
-  firstName: string;
+  username: string;
 
   @Column
-  lastName: string;
+  firstname: string;
 
-  @Column({ defaultValue: true })
-  isActive: boolean;
+  @Column
+  lastname: string;
+
+  @Column
+  password: string;
+
+
 }
