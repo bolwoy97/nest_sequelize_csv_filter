@@ -1,12 +1,21 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './modules/app/app.controller';
-import { AppService } from './modules/app/app.service';
-import { AuthController } from './modules/auth/auth.controller';
-import { AuthService } from './modules/auth/auth.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { AppController } from './api/app/app.controller';
+import { AppService } from './api/app/app.service';
+import { AuthController } from './api/auth/auth.controller';
+import { AuthModule } from './api/auth/auth.module';
+import { AuthService } from './api/auth/auth.service';
 
 @Module({
-  imports: [],
-  controllers: [AppController,AuthController],
-  providers: [AppService, AuthService],
+  imports: [
+    AuthModule,
+    MongooseModule.forRoot("mongodb://localhost:27017/testove", {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
