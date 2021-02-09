@@ -4,6 +4,7 @@ import { UserModule } from './api/user/user.module';
 import { ProductModule } from './api/product/product.module';
 import { CsvFilterModule } from './api/csvFilter/csvFilter.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { dbKeys } from './keys';
 
 @Module({
   imports: [
@@ -16,11 +17,11 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     CsvFilterModule,
     SequelizeModule.forRoot({
       dialect: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'testove',
+      host: dbKeys.host,
+      port: dbKeys.port,
+      username: dbKeys.username,
+      password: dbKeys.password,
+      database: dbKeys.database,
       autoLoadModels: true,
       synchronize: true,
     }),
