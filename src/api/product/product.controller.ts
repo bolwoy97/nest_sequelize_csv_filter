@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/modules/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/modules/jwt/jwt-auth.guard';
 import { addProductDto, updateProductDto } from './product.dtos';
 import { ProductService } from './product.service';
 
