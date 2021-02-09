@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { SequelizeModule } from '@nestjs/sequelize';
 import { ProductController } from './product.controller';
-import { Product, ProductSchema } from './product.scema';
+import { Product } from './product.model';
 import { ProductService } from './product.service';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
+    //MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
+    SequelizeModule.forFeature([Product]),
   ],
   controllers: [ProductController],
   providers: [ProductService],
