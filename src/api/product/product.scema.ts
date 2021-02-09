@@ -10,9 +10,7 @@ export class Product {
   })
   created: Date;
 
-  @Prop({
-    unique : true
-  })
+  @Prop()
   name: string;
 
   @Prop()

@@ -1,4 +1,5 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/modules/jwt-auth.guard';
 import { addProductDto } from './product.dtos';
 import { ProductService } from './product.service';
 
@@ -7,7 +8,7 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async addProduct(@Body() data: addProductDto): Promise<any> {
     return this.productService.addProduct(data);
   }
